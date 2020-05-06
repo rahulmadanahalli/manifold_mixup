@@ -1,9 +1,15 @@
-# Manifold Mixup ML Implementation #
+# Manifold Mixup ML Implementation
 Tensorflow implementation of the following research paper:
 
 "Manifold Mixup: Better Representations by Interpolating Hidden State" 
 
 https://arxiv.org/pdf/1806.05236.pdf
+
+**High level explanation**
+
+Normally, you give a neural network data `x` (ie. an image) and train it to output a specific label `y` with high 
+confidence. In manifold mixup, you also give the network data that’s on/near the decision boundary between different label
+classes, and train it to output a label with low confidence because it should be uncertain about that data.
 
 Manifold Mixup is a simple regularizer that encourages neural networks to:
 
@@ -11,7 +17,7 @@ Manifold Mixup is a simple regularizer that encourages neural networks to:
 * limit the directions of variance for hidden representations of the same class, so hidden representations with the same
  class "clump" together.
 
-### How does it work?
+## How does it work?
 
 In training, during each forward pass of a mini batch, we choose a layer k among a set of eligible mixup layers.
 During the forward pass for that mini batch, we perform "manifold mixup" at layer k:
@@ -27,11 +33,11 @@ representation x<sub>mp</sub> and label y<sub>mp</sub> for every point in the mi
 4. We then input these new mixup hidden representations into layer k and continue the forward pass. We define the loss
 function/gradients on these new mixup hidden representations and their corresponding mixup labels.
 
-### Manifold Mixup Results ###
+## Manifold Mixup Results
 
 With my Tensorflow implementation, I was able to reproduce some of the research paper's findings:
 
-#### Smoother decision boundary ####
+### Smoother decision boundary
 I generated a synthetic spiral dataset (class 0 are orange points and class 1 are blue points).
 Then, I trained 2 deep neural networks: one that uses manifold mixup and a baseline.
 The below plots show the model's confidence for a given label
@@ -43,7 +49,7 @@ decision boundary and a bigger band of lower confidence predictions.
 :-----:|:-----:
 ![](results/figures/spiral_baseline.png) | ![](results/figures/spiral_manifold_mixup.png)
 
-#### Larger margin between classes ####
+### Larger margin between classes
 
 Using the MNIST dataset (handwritten numbers), I trained neural networks with a 2D bottleneck layer (one that used manifold
 mixup and a baseline). Then I plotted the hidden representation of the dataset at the 2D bottleneck layer. Points of the same color belong to the 
@@ -57,7 +63,7 @@ smaller regions in the hidden space and with a bigger separating margin between 
 baseline |![](results/figures/bottleneck_baseline_0_4.png)|![](results/figures/bottleneck_baseline_0_9.png)
 manifold mixup|![](results/figures/bottleneck_manifold_mixup_0_4.png)|![](results/figures/bottleneck_manifold_mixup_0_9.png)
 
-#### Flatter representations ####
+### Flatter representations ###
 
 Using the MNIST dataset (handwritten numbers), I trained neural networks with a 12D bottleneck layer. One network 
 was a baseline, another used Input Mixup, and the third used manifold mixup. I then grouped
@@ -75,13 +81,13 @@ that manifold mixup leads to flatter representations.
 
 
 
-### Run the Demo ###
+## Run the Demo
 
 1. Install Python 3
 2. `pip install virtualenv`
 3. `make all`
 
-### Add Manifold Mixup to your own deep neural network ###
+## Add Manifold Mixup to your own deep neural network
 
 I've created a class `ManifoldMixupModel` (in `models.py`) that implements manifold mixup for an arbitrary
 deep neural network. Follow the below directions to add manifold mixup to your model:
